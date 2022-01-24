@@ -1,25 +1,13 @@
-import React, { useEffect, useState } from "react";
-import api from "../../repositories";
-import IUser from "../../models/user";
+import React, { useContext, useEffect } from "react";
 import Loader from "../Loader";
 import UserItem from "./UserItem";
+import GithubContext from "../../context/GithubContext";
 
 function UserList() {
-  const [users, setUsers]: [IUser[], (users: IUser[]) => void] = useState<
-    IUser[]
-  >([]);
-  const [loading, setLoading] = useState(false);
-
+  const { users, loading, fetchUsers } = useContext(GithubContext);
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    const { data } = await api.get("/users");
-    setUsers(data);
-    setLoading(false);
-  };
 
   if (loading) return <Loader className="text-3xl mx-auto" />;
 
