@@ -1,27 +1,30 @@
 import IUser from "../models/user";
 
 export enum GithubReducerActionKind {
-  SET_USERS = "setUsers",
-  SET_LOADING = "setLoading",
+  SET_USERS,
+  SET_LOADING,
 }
 
 interface GithubReducerState {
-  users?: IUser[];
-  loading?: boolean;
+  users: IUser[];
+  loading: boolean;
 }
 
-interface Action {
-  type: GithubReducerActionKind;
-  payload: GithubReducerState;
-}
+type UserAction = { type: GithubReducerActionKind.SET_USERS; payload: IUser[] };
+type LoadingAction = {
+  type: GithubReducerActionKind.SET_LOADING;
+  payload: boolean;
+};
+
+type Action = UserAction | LoadingAction;
 
 const githubReducer = (state: GithubReducerState, action: Action) => {
   switch (action.type) {
     case GithubReducerActionKind.SET_USERS:
-      return { ...state, users: action.payload.users };
+      return { ...state, users: action.payload };
 
     case GithubReducerActionKind.SET_LOADING:
-      return { ...state, loading: action.payload.loading };
+      return { ...state, loading: action.payload };
 
     default:
       return state;

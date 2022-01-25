@@ -24,7 +24,7 @@ export const GithubProvider: React.FC = ({ children }) => {
   const setLoading = (loading: boolean) => {
     dispatch({
       type: GithubReducerActionKind.SET_LOADING,
-      payload: { loading },
+      payload: loading,
     });
   };
 
@@ -33,7 +33,7 @@ export const GithubProvider: React.FC = ({ children }) => {
     const { data } = await api.get("/users");
     dispatch({
       type: GithubReducerActionKind.SET_USERS,
-      payload: { users: data },
+      payload: data,
     });
     setLoading(false);
   };
@@ -41,9 +41,9 @@ export const GithubProvider: React.FC = ({ children }) => {
   return (
     <GithubContext.Provider
       value={{
-        users: state.users || [],
+        users: state.users,
         fetchUsers,
-        loading: state.loading || false,
+        loading: state.loading,
       }}
     >
       {children}
