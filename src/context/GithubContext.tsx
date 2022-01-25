@@ -1,6 +1,7 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useReducer } from "react";
 import IUser from "../models/user";
 import api from "../repositories";
+import githubReducer, { GithubReducerActionKind } from "./GithubReducer";
 
 interface IGithubContext {
   users: IUser[];
@@ -15,20 +16,36 @@ const GithubContext = createContext<IGithubContext>({
 });
 
 export const GithubProvider: React.FC = ({ children }) => {
-  const [users, setUsers]: [IUser[], (users: IUser[]) => void] = useState<
-    IUser[]
-  >([]);
-  const [loading, setLoading] = useState(false);
+  const [state, dispatch] = useReducer(githubReducer, {
+    users: [],
+    loading: false,
+  });
+
+  const setLoading = (loading: boolean) => {
+    dispatch({
+      type: GithubReducerActionKind.SET_LOADING,
+      payload: { loading },
+    });
+  };
 
   const fetchUsers = async () => {
     setLoading(true);
     const { data } = await api.get("/users");
-    setUsers(data);
+    dispatch({
+      type: GithubReducerActionKind.SET_USERS,
+      payload: { users: data },
+    });
     setLoading(false);
   };
 
   return (
-    <GithubContext.Provider value={{ users, fetchUsers, loading }}>
+    <GithubContext.Provider
+      value={{
+        users: state.users || [],
+        fetchUsers,
+        loading: state.loading || false,
+      }}
+    >
       {children}
     </GithubContext.Provider>
   );
