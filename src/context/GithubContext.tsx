@@ -6,12 +6,14 @@ import githubReducer, { GithubReducerActionKind } from "./GithubReducer";
 interface IGithubContext {
   users: IUser[];
   fetchUsers: () => void;
+  searchUsers: (q: string) => void;
   loading: boolean;
 }
 
 const GithubContext = createContext<IGithubContext>({
   users: [],
   fetchUsers: () => {},
+  searchUsers: () => {},
   loading: false,
 });
 
@@ -38,12 +40,23 @@ export const GithubProvider: React.FC = ({ children }) => {
     setLoading(false);
   };
 
+  const searchUsers = async (q: string) => {
+    setLoading(true);
+    const { data } = await api.get("/search/users", { params: { q } });
+    dispatch({
+      type: GithubReducerActionKind.SET_USERS,
+      payload: data.items,
+    });
+    setLoading(false);
+  };
+
   return (
     <GithubContext.Provider
       value={{
         users: state.users,
         fetchUsers,
         loading: state.loading,
+        searchUsers,
       }}
     >
       {children}
