@@ -6,7 +6,9 @@ import GithubContext from "../../context/GithubContext";
 function UserList() {
   const { users, loading, fetchUsers } = useContext(GithubContext);
   useEffect(() => {
-    fetchUsers();
+    if (users.length === 0) {
+      fetchUsers();
+    }
   }, []);
 
   if (loading) return <Loader className="text-3xl mx-auto" />;
