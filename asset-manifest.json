@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/learn-react-github-finder-app/static/css/main.bbbde52b.css",
-    "main.js": "/learn-react-github-finder-app/static/js/main.c7e2b097.js",
+    "main.js": "/learn-react-github-finder-app/static/js/main.c1379224.js",
     "static/js/943.21515329.chunk.js": "/learn-react-github-finder-app/static/js/943.21515329.chunk.js",
     "index.html": "/learn-react-github-finder-app/index.html",
     "main.bbbde52b.css.map": "/learn-react-github-finder-app/static/css/main.bbbde52b.css.map",
-    "main.c7e2b097.js.map": "/learn-react-github-finder-app/static/js/main.c7e2b097.js.map",
+    "main.c1379224.js.map": "/learn-react-github-finder-app/static/js/main.c1379224.js.map",
     "943.21515329.chunk.js.map": "/learn-react-github-finder-app/static/js/943.21515329.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bbbde52b.css",
-    "static/js/main.c7e2b097.js"
+    "static/js/main.c1379224.js"
   ]
 }
