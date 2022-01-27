@@ -11,6 +11,8 @@ interface IGithubContext {
   getUser: (login: string) => void;
   removeUser: () => void;
   loading: boolean;
+  query: string;
+  setQuery: (q: string) => void;
 }
 
 const GithubContext = createContext<IGithubContext>({
@@ -20,14 +22,17 @@ const GithubContext = createContext<IGithubContext>({
   searchUsers: () => {},
   getUser: () => {},
   removeUser: () => {},
-  loading: false,
+  loading: true,
+  query: "",
+  setQuery: () => {},
 });
 
 export const GithubProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(githubReducer, {
     users: [],
     user: null,
-    loading: false,
+    loading: true,
+    query: "",
   });
 
   const setLoading = (loading: boolean) => {
@@ -77,6 +82,13 @@ export const GithubProvider: React.FC = ({ children }) => {
     });
   };
 
+  const setQuery = (query: string) => {
+    dispatch({
+      type: GithubReducerActionKind.SET_QUERY,
+      payload: query,
+    });
+  };
+
   return (
     <GithubContext.Provider
       value={{
@@ -87,6 +99,8 @@ export const GithubProvider: React.FC = ({ children }) => {
         searchUsers,
         getUser,
         removeUser,
+        query: state.query,
+        setQuery,
       }}
     >
       {children}

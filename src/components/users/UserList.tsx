@@ -1,13 +1,26 @@
 import React, { useContext, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Loader from "../Loader";
 import UserItem from "./UserItem";
 import GithubContext from "../../context/GithubContext";
 
 function UserList() {
-  const { users, loading, fetchUsers } = useContext(GithubContext);
+  const {
+    users,
+    loading,
+    fetchUsers,
+    searchUsers,
+    query: currentQuery,
+  } = useContext(GithubContext);
+  const [searchParams] = useSearchParams();
   useEffect(() => {
-    if (users.length === 0) {
-      fetchUsers();
+    const query = searchParams.get("query") || "";
+    if (users.length === 0 || query !== currentQuery) {
+      if (query.length > 0) {
+        searchUsers(query);
+      } else {
+        fetchUsers();
+      }
     }
   }, []);
 

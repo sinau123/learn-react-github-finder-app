@@ -1,26 +1,37 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { useSearchParams } from "react-router-dom";
 import GithubContext from "../../context/GithubContext";
 
 function UserSearch() {
   const [text, setText] = useState("");
-  const { searchUsers, fetchUsers } = useContext(GithubContext);
+  const { searchUsers, fetchUsers, setQuery } = useContext(GithubContext);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const setCurrentQuery = (q: string) => {
+    setQuery(q);
+    setText(q);
+  };
+  useEffect(() => {
+    setCurrentQuery(searchParams.get("query") || "");
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (text.length > 0) {
+      setSearchParams({ query: text });
       searchUsers(text);
     } else {
+      setSearchParams({ query: "" });
       fetchUsers();
     }
   };
 
   const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setText(e.currentTarget.value);
+    setCurrentQuery(e.currentTarget.value);
   };
 
   const handleClear = () => {
-    setText("");
+    setCurrentQuery("");
     fetchUsers();
   };
 

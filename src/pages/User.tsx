@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaUsers, FaUserFriends, FaStore, FaBook } from "react-icons/fa";
 import Loader from "../components/Loader";
 import GithubContext from "../context/GithubContext";
@@ -52,14 +52,15 @@ function User() {
         link: `https://twitter.com/${user.twitter_username}`,
       });
   }
+  const navigate = useNavigate();
 
   if (loading) return <Loader className="text-3xl mx-auto" />;
   return (
     <div className="w-full mx-auto">
       <div className="mb-4">
-        <Link to="/" className="btn btn-ghost">
+        <button onClick={() => navigate(-1)} className="btn btn-ghost">
           Back to Search
-        </Link>
+        </button>
       </div>
       <div className="card glass lg:card-side">
         <figure className="bg-slate-400">
@@ -71,7 +72,7 @@ function User() {
         <div className="card-body flex flex-col justify-between">
           <div>
             <div className="card-title flex items-center space-x-1">
-              <h3>{user?.name}</h3>
+              <h3>{user?.name || user?.login}</h3>
               {user?.type && (
                 <button className="badge badge-success rounded-full">
                   {user.type}

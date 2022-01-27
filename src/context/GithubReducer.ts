@@ -5,12 +5,14 @@ export enum GithubReducerActionKind {
   SET_USER,
   REMOVE_USER,
   SET_LOADING,
+  SET_QUERY,
 }
 
 interface GithubReducerState {
   users: IUser[];
   user: IUserDetail | null;
   loading: boolean;
+  query: string;
 }
 
 type SetUsersAction = {
@@ -26,12 +28,17 @@ type SetLoadingAction = {
   type: GithubReducerActionKind.SET_LOADING;
   payload: boolean;
 };
+type SetQueryAction = {
+  type: GithubReducerActionKind.SET_QUERY;
+  payload: string;
+};
 
 type Action =
   | SetUsersAction
   | SetLoadingAction
   | SetUserAction
-  | RemoveUserAction;
+  | RemoveUserAction
+  | SetQueryAction;
 
 const githubReducer = (state: GithubReducerState, action: Action) => {
   switch (action.type) {
@@ -46,6 +53,9 @@ const githubReducer = (state: GithubReducerState, action: Action) => {
 
     case GithubReducerActionKind.SET_USER:
       return { ...state, user: action.payload };
+
+    case GithubReducerActionKind.SET_QUERY:
+      return { ...state, query: action.payload };
 
     default:
       return state;
