@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useSearchParams } from "react-router-dom";
-import GithubContext from "../../context/GithubContext";
+import useGithub from "../../context/GithubContext";
 
 function UserSearch() {
   const [text, setText] = useState("");
-  const { searchUsers, fetchUsers, setQuery } = useContext(GithubContext);
+  const { searchUsers, fetchUsers, setQuery } = useGithub();
   const [searchParams, setSearchParams] = useSearchParams();
   const setCurrentQuery = (q: string) => {
     setQuery(q);

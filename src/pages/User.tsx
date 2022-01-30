@@ -1,13 +1,21 @@
-import React, { useContext, useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaUsers, FaUserFriends, FaStore, FaBook } from "react-icons/fa";
 import Loader from "../components/Loader";
-import GithubContext from "../context/GithubContext";
 import { isValidUrl } from "../utils";
+import useGithub from "../context/GithubContext";
 
 function User() {
-  const { getUser, user, loading } = useContext(GithubContext);
-  const { login } = useParams<{ login: string }>();
+  const { user, loading, getUser } = useGithub();
+  const params = useParams<{ username: string }>();
+  const username = params.username || "";
+
+  useLayoutEffect(() => {
+    if (user?.login !== username) {
+      getUser(username);
+    }
+  }, [getUser, user?.login, username]);
+
   const userInfo: { name: string; value: string; link?: string }[] = [];
   const userFollow = [
     {
@@ -31,11 +39,6 @@ function User() {
       icon: FaStore,
     },
   ];
-  useEffect(() => {
-    if (login && user?.login !== login) {
-      getUser(login);
-    }
-  }, []);
 
   if (user) {
     user.location && userInfo.push({ name: "Location", value: user.location });

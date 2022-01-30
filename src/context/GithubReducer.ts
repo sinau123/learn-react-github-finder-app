@@ -33,14 +33,14 @@ type SetQueryAction = {
   payload: string;
 };
 
-type Action =
+export type GithubAction =
   | SetUsersAction
   | SetLoadingAction
   | SetUserAction
   | RemoveUserAction
   | SetQueryAction;
 
-const githubReducer = (state: GithubReducerState, action: Action) => {
+const githubReducer = (state: GithubReducerState, action: GithubAction) => {
   switch (action.type) {
     case GithubReducerActionKind.SET_USERS:
       return { ...state, users: action.payload };

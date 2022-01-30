@@ -1,31 +1,25 @@
-import React, { createContext, useReducer } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useReducer,
+} from "react";
 import IUser, { IUserDetail } from "../models/user";
 import api from "../repositories";
-import githubReducer, { GithubReducerActionKind } from "./GithubReducer";
+import githubReducer, {
+  GithubAction,
+  GithubReducerActionKind,
+} from "./GithubReducer";
 
 interface IGithubContext {
   users: IUser[];
   user: IUserDetail | null;
-  fetchUsers: () => void;
-  searchUsers: (q: string) => void;
-  getUser: (login: string) => void;
-  removeUser: () => void;
   loading: boolean;
   query: string;
-  setQuery: (q: string) => void;
+  dispatch: React.Dispatch<GithubAction>;
 }
 
-const GithubContext = createContext<IGithubContext>({
-  users: [],
-  user: null,
-  fetchUsers: () => {},
-  searchUsers: () => {},
-  getUser: () => {},
-  removeUser: () => {},
-  loading: true,
-  query: "",
-  setQuery: () => {},
-});
+const GithubContext = createContext<IGithubContext>({} as IGithubContext);
 
 export const GithubProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(githubReducer, {
@@ -35,14 +29,33 @@ export const GithubProvider: React.FC = ({ children }) => {
     query: "",
   });
 
-  const setLoading = (loading: boolean) => {
-    dispatch({
-      type: GithubReducerActionKind.SET_LOADING,
-      payload: loading,
-    });
-  };
+  return (
+    <GithubContext.Provider value={{ ...state, dispatch }}>
+      {children}
+    </GithubContext.Provider>
+  );
+};
 
-  const fetchUsers = async () => {
+function useGithub() {
+  const context = useContext(GithubContext);
+
+  if (!context) {
+    throw new Error(`useCount must be used within a CountProvider`);
+  }
+
+  const { dispatch } = context;
+
+  const setLoading = useCallback(
+    (loading: boolean) => {
+      dispatch({
+        type: GithubReducerActionKind.SET_LOADING,
+        payload: loading,
+      });
+    },
+    [dispatch]
+  );
+
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     const { data } = await api.get("/users");
     dispatch({
@@ -50,31 +63,37 @@ export const GithubProvider: React.FC = ({ children }) => {
       payload: data,
     });
     setLoading(false);
-  };
+  }, [setLoading, dispatch]);
 
-  const searchUsers = async (q: string) => {
-    setLoading(true);
-    const { data } = await api.get("/search/users", { params: { q } });
-    dispatch({
-      type: GithubReducerActionKind.SET_USERS,
-      payload: data.items,
-    });
-    setLoading(false);
-  };
-
-  const getUser = async (login: string) => {
-    setLoading(true);
-    try {
-      const { data } = await api.get(`/users/${login}`);
+  const searchUsers = useCallback(
+    async (q: string) => {
+      setLoading(true);
+      const { data } = await api.get("/search/users", { params: { q } });
       dispatch({
-        type: GithubReducerActionKind.SET_USER,
-        payload: data,
+        type: GithubReducerActionKind.SET_USERS,
+        payload: data.items,
       });
-    } catch (err) {
-      console.log(err);
-    }
-    setLoading(false);
-  };
+      setLoading(false);
+    },
+    [setLoading, dispatch]
+  );
+
+  const getUser = useCallback(
+    async (login: string) => {
+      setLoading(true);
+      try {
+        const { data } = await api.get(`/users/${login}`);
+        dispatch({
+          type: GithubReducerActionKind.SET_USER,
+          payload: data,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+      setLoading(false);
+    },
+    [setLoading, dispatch]
+  );
 
   const removeUser = () => {
     dispatch({
@@ -82,30 +101,24 @@ export const GithubProvider: React.FC = ({ children }) => {
     });
   };
 
-  const setQuery = (query: string) => {
-    dispatch({
-      type: GithubReducerActionKind.SET_QUERY,
-      payload: query,
-    });
-  };
-
-  return (
-    <GithubContext.Provider
-      value={{
-        users: state.users,
-        user: state.user,
-        fetchUsers,
-        loading: state.loading,
-        searchUsers,
-        getUser,
-        removeUser,
-        query: state.query,
-        setQuery,
-      }}
-    >
-      {children}
-    </GithubContext.Provider>
+  const setQuery = useCallback(
+    (query: string) => {
+      dispatch({
+        type: GithubReducerActionKind.SET_QUERY,
+        payload: query,
+      });
+    },
+    [dispatch]
   );
-};
 
-export default GithubContext;
+  return {
+    ...context,
+    fetchUsers,
+    getUser,
+    searchUsers,
+    removeUser,
+    setQuery,
+  };
+}
+
+export default useGithub;

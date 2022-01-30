@@ -1,8 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Loader from "../Loader";
 import UserItem from "./UserItem";
-import GithubContext from "../../context/GithubContext";
+import useGithub from "../../context/GithubContext";
 
 function UserList() {
   const {
@@ -11,10 +11,11 @@ function UserList() {
     fetchUsers,
     searchUsers,
     query: currentQuery,
-  } = useContext(GithubContext);
+  } = useGithub();
+
   const [searchParams] = useSearchParams();
+  const query = searchParams.get("query") || "";
   useEffect(() => {
-    const query = searchParams.get("query") || "";
     if (users.length === 0 || query !== currentQuery) {
       if (query.length > 0) {
         searchUsers(query);
