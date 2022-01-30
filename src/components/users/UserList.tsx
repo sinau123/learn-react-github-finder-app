@@ -1,29 +1,22 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Loader from "../Loader";
 import UserItem from "./UserItem";
 import useGithub from "../../context/GithubContext";
 
 function UserList() {
-  const {
-    users,
-    loading,
-    fetchUsers,
-    searchUsers,
-    query: currentQuery,
-  } = useGithub();
+  const { users, loading, fetchUsers, searchUsers, query } = useGithub();
 
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("query") || "";
+  const paramQuery = searchParams.get("query") || "";
+  const currentQuery = useRef(query);
+  const usersRef = useRef(users);
+
   useEffect(() => {
-    if (users.length === 0 || query !== currentQuery) {
-      if (query.length > 0) {
-        searchUsers(query);
-      } else {
-        fetchUsers();
-      }
+    if (usersRef.current.length === 0 || paramQuery !== currentQuery.current) {
+      paramQuery.length > 0 ? searchUsers(paramQuery) : fetchUsers();
     }
-  }, []);
+  }, [fetchUsers, paramQuery, searchUsers]);
 
   if (loading) return <Loader className="text-3xl mx-auto" />;
 

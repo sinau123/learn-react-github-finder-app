@@ -5,33 +5,25 @@ import useGithub from "../../context/GithubContext";
 
 function UserSearch() {
   const [text, setText] = useState("");
-  const { searchUsers, fetchUsers, setQuery } = useGithub();
+  const { fetchUsers, setQuery } = useGithub();
   const [searchParams, setSearchParams] = useSearchParams();
-  const setCurrentQuery = (q: string) => {
-    setQuery(q);
-    setText(q);
-  };
   useEffect(() => {
-    setCurrentQuery(searchParams.get("query") || "");
-  }, []);
+    const paramQuery = searchParams.get("query") || "";
+    setQuery(paramQuery);
+    setText(paramQuery);
+  }, [setQuery, searchParams]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (text.length > 0) {
-      setSearchParams({ query: text });
-      searchUsers(text);
-    } else {
-      setSearchParams({ query: "" });
-      fetchUsers();
-    }
+    setSearchParams({ query: text });
   };
 
   const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setCurrentQuery(e.currentTarget.value);
+    setText(e.currentTarget.value);
   };
 
   const handleClear = () => {
-    setCurrentQuery("");
+    setQuery("");
     fetchUsers();
   };
 
