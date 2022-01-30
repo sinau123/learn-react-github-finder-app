@@ -24,6 +24,9 @@ function UserSearch() {
 
   const handleClear = () => {
     setQuery("");
+    setText("");
+    setSearchParams("");
+
     fetchUsers();
   };
 
